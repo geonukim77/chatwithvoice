@@ -13,7 +13,6 @@ async function startRecording() {
   mediaRecorder.ondataavailable = e => chunks.push(e.data);
   mediaRecorder.onstop = async () => {
     const blob = new Blob(chunks, { type: "audio/webm" });
-    form.append("file", blob, "audio.webm");
 
     const text = await speechToText(blob);
     console.log("📝 변환된 텍스트:", text);
@@ -37,7 +36,7 @@ async function startRecording() {
 recordBtn.onclick = startRecording;
 
 async function speechToText(audioBlob) {
-  const form = new FormData();
+  const form = new FormData(); // ← 선언 추가
   form.append("file", audioBlob, "audio.webm");
   form.append("model", "whisper-1");
 
