@@ -16,7 +16,8 @@ app.use(express.json());
 // Whisper 음성 → 텍스트
 app.post('/api/speech-to-text', upload.single('file'), async (req, res) => {
   const form = new FormData();
-  form.append('file', await fileFromPath(req.file.path));
+  // 원본 파일명(req.file.originalname)으로 확장자 전달
+  form.append('file', await fileFromPath(req.file.path, req.file.originalname));
   form.append('model', 'whisper-1');
 
   const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
@@ -25,7 +26,7 @@ app.post('/api/speech-to-text', upload.single('file'), async (req, res) => {
     body: form
   });
   const data = await response.json();
-  console.log("Whisper 응답:", data); // 추가
+  console.log("Whisper 응답:", data);
   fs.unlinkSync(req.file.path);
   res.json(data);
 });

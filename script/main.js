@@ -13,6 +13,8 @@ async function startRecording() {
   mediaRecorder.ondataavailable = e => chunks.push(e.data);
   mediaRecorder.onstop = async () => {
     const blob = new Blob(chunks, { type: "audio/webm" });
+    form.append("file", blob, "audio.webm");
+
     const text = await speechToText(blob);
     console.log("📝 변환된 텍스트:", text);
     document.getElementById("userText").textContent = "🗣 " + text;
@@ -45,6 +47,11 @@ async function speechToText(audioBlob) {
   });
 
   const data = await res.json();
+  if (!data.text) {
+    console.error("Whisper 변환 실패:", data);
+    alert("음성 인식에 실패했습니다. 다시 시도해 주세요.");
+    return null;
+  }
   return data.text;
 }
 

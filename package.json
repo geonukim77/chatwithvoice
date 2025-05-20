@@ -1,5 +1,12 @@
 {
+  "type": "module",
   "dependencies": {
-    "dotenv": "^16.5.0"
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "form-data-encoder": "^4.0.2",
+    "formdata-node": "^6.0.3",
+    "multer": "^2.0.0",
+    "node-fetch": "^3.3.2"
   }
 }
