@@ -1,9 +1,12 @@
-require('dotenv').config();
-const express = require('express');
-const fetch = require('node-fetch');
-const multer = require('multer');
-const cors = require('cors');
-const fs = require('fs');
+import dotenv from 'dotenv';
+import express from 'express';
+import fetch from 'node-fetch';
+import multer from 'multer';
+import cors from 'cors';
+import fs from 'fs';
+import { FormData } from 'formdata-node';
+import { fileFromPath } from 'formdata-node/file-from-path';
+dotenv.config();
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -12,17 +15,18 @@ app.use(express.json());
 
 // Whisper 음성 → 텍스트
 app.post('/api/speech-to-text', upload.single('file'), async (req, res) => {
-  const formData = new FormData();
-  formData.append('file', fs.createReadStream(req.file.path), req.file.originalname);
-  formData.append('model', 'whisper-1');
+  const form = new FormData();
+  form.append('file', await fileFromPath(req.file.path));
+  form.append('model', 'whisper-1');
 
   const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: formData
+    body: form
   });
   const data = await response.json();
-  fs.unlinkSync(req.file.path); // 임시 파일 삭제
+  console.log("Whisper 응답:", data); // 추가
+  fs.unlinkSync(req.file.path);
   res.json(data);
 });
 
@@ -46,14 +50,14 @@ app.post('/api/gpt', async (req, res) => {
 
 // ElevenLabs 목소리 등록
 app.post('/api/voice-upload', upload.single('file'), async (req, res) => {
-  const formData = new FormData();
-  formData.append('name', '내 목소리');
-  formData.append('files', fs.createReadStream(req.file.path), req.file.originalname);
+  const form = new FormData();
+  form.append('name', '내 목소리');
+  form.append('files', await fileFromPath(req.file.path));
 
   const response = await fetch('https://api.elevenlabs.io/v1/voices/add', {
     method: 'POST',
     headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY },
-    body: formData
+    body: form
   });
   const data = await response.json();
   fs.unlinkSync(req.file.path);
