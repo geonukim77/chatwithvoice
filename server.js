@@ -34,7 +34,7 @@ app.post('/api/speech-to-text', upload.single('file'), async (req, res) => {
 
 // GPT 답변
 app.post('/api/gpt', async (req, res) => {
-  const { text } = req.body;
+  console.log("GPT 질문:", req.body.text); // 질문 로그
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -43,10 +43,11 @@ app.post('/api/gpt', async (req, res) => {
     },
     body: JSON.stringify({
       model: 'gpt-4',
-      messages: [{ role: 'user', content: text }]
+      messages: [{ role: 'user', content: req.body.text }]
     })
   });
   const data = await response.json();
+  console.log("GPT 응답:", data); // 응답 로그
   res.json(data);
 });
 
