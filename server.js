@@ -9,6 +9,7 @@ import { fileFromPath } from 'formdata-node/file-from-path';
 dotenv.config();
 
 const app = express();
+app.use(express.static('.')); // 또는 app.use(express.static('public'));
 const upload = multer({ dest: 'uploads/' });
 app.use(cors());
 app.use(express.json());

@@ -66,6 +66,7 @@ async function getGPTResponse(text) {
     console.error("GPT API error:", data);
     return "GPT 응답 오류";
   }
+  console.log("🤖 GPT 답변:", data.choices[0].message.content); // ← 로그 추가
   return data.choices[0].message.content;
 }
 
