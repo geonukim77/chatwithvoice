@@ -74,7 +74,7 @@ async function uploadVoice(audioBlob) {
       
       // 5초 후 다시 녹음 가능하게
       setTimeout(() => {
-        voiceRecordBtn.textContent = "🔴 목소리 다시 녹음하기";
+        voiceRecordBtn.textContent = "🔴 다시 녹음하기";
         voiceRecordBtn.style.background = "#ef4444";
         voiceStatus.textContent = "새로운 목소리로 다시 등록하거나, 아래에서 대화를 시작하세요.";
         voiceStatus.style.color = "#666";
