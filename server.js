@@ -86,6 +86,14 @@ app.post('/api/tts', async (req, res) => {
   res.send(Buffer.from(buffer));
 });
 
+// 사전신청 이메일 수집
+app.post('/api/notify', express.json(), (req, res) => {
+  const { email } = req.body;
+  // 실제로는 DB나 파일에 저장해야 함
+  console.log("사전신청 이메일:", email);
+  res.json({ ok: true });
+});
+
 app.listen(3000, () => {
   console.log('서버 실행중: http://localhost:3000');
 });
