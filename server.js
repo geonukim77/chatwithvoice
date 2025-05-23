@@ -1,17 +1,23 @@
-import dotenv from 'dotenv';
 import express from 'express';
+import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import multer from 'multer';
 import cors from 'cors';
 import fs from 'fs';
 import { FormData } from 'formdata-node';
 import { fileFromPath } from 'formdata-node/file-from-path';
+
 dotenv.config();
 
 const app = express();
-app.use(express.static('.')); // 또는 app.use(express.static('public'));
-const upload = multer({ dest: 'uploads/' });
+
+// 정적 파일 제공 (HTML, CSS, JS)
+app.use(express.static('.'));
+
+// CORS 허용
 app.use(cors());
+
+const upload = multer({ dest: 'uploads/' });
 app.use(express.json());
 
 // Whisper 음성 → 텍스트
@@ -53,18 +59,42 @@ app.post('/api/gpt', async (req, res) => {
 
 // ElevenLabs 목소리 등록
 app.post('/api/voice-upload', upload.single('file'), async (req, res) => {
-  const form = new FormData();
-  form.append('name', '내 목소리');
-  form.append('files', await fileFromPath(req.file.path));
+  try {
+    if (!req.file) {
+      return res.status(400).json({ detail: "파일이 업로드되지 않았습니다." });
+    }
 
-  const response = await fetch('https://api.elevenlabs.io/v1/voices/add', {
-    method: 'POST',
-    headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY },
-    body: form
-  });
-  const data = await response.json();
-  fs.unlinkSync(req.file.path);
-  res.json(data);
+    console.log("목소리 파일 업로드됨:", req.file.originalname);
+    
+    const form = new FormData();
+    form.append('name', '내 목소리');
+    form.append('files', await fileFromPath(req.file.path));
+
+    const response = await fetch('https://api.elevenlabs.io/v1/voices/add', {
+      method: 'POST',
+      headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY },
+      body: form
+    });
+    
+    const data = await response.json();
+    console.log("ElevenLabs 응답:", data);
+    
+    fs.unlinkSync(req.file.path);
+    
+    // 성공 응답
+    if (data.voice_id) {
+      res.json({ 
+        voice_id: data.voice_id,
+        message: "목소리 등록 성공"
+      });
+    } else {
+      res.status(400).json({ detail: "목소리 등록 실패: " + (data.detail || JSON.stringify(data)) });
+    }
+    
+  } catch (error) {
+    console.error("목소리 업로드 에러:", error);
+    res.status(500).json({ detail: "목소리 업로드 실패: " + error.message });
+  }
 });
 
 // ElevenLabs TTS
@@ -94,6 +124,8 @@ app.post('/api/notify', express.json(), (req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(3000, () => {
-  console.log('서버 실행중: http://localhost:3000');
+// 서버 시작 (기존 코드가 없다면 추가)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -1,9 +1,8 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Voice GPT Chat</title>
+  <title>나를 닮은 AI - Voice GPT Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="/favicon.ico">
   <style>
@@ -13,29 +12,27 @@
       color: #222;
       margin: 0;
       padding: 0;
+      line-height: 1.6;
     }
     .container {
-      max-width: 700px;
-      margin: 40px auto;
+      max-width: 800px;
+      margin: 0 auto;
       background: #fff;
       border-radius: 16px;
-      box-shadow: 0 4px 24px #0001;
-      padding: 40px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      margin-top: 40px;
+      margin-bottom: 40px;
+      padding: 40px;
     }
     h1 {
-      font-size: 2.2rem;
-      margin-bottom: 0.2em;
+      font-size: 2.5rem;
+      margin-bottom: 0.5em;
       color: #3b82f6;
       text-align: center;
-    }
-    h2 {
-      font-size: 1.3rem;
-      color: #555;
-      margin-top: 0;
-      text-align: center;
-      margin-bottom: 2em;
+      font-weight: bold;
     }
     .subtitle {
+      font-size: 1.2rem;
       color: #666;
       text-align: center;
       margin-bottom: 2em;
@@ -48,14 +45,40 @@
       padding: 1em 2em;
       font-size: 1.1rem;
       cursor: pointer;
-      margin: 1.5em auto 2em auto;
+      margin: 1.5em auto;
       display: block;
+      transition: background 0.3s;
     }
-    .cta-btn:active { background: #2563eb; }
-    .section { margin: 2.5em 0 1.5em 0; }
-    .highlight { color: #3b82f6; font-weight: bold; }
-    .input-row { display: flex; gap: 12px; margin-bottom: 1em; justify-content: center; }
-    input[type="file"] { flex: 1; }
+    .cta-btn:hover { background: #2563eb; }
+    .section {
+      margin: 3em 0;
+      padding: 0 1em;
+    }
+    .highlight {
+      color: #3b82f6;
+      font-weight: bold;
+    }
+    .demo-section {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 2em;
+      margin: 2em 0;
+      text-align: center;
+    }
+    .demo-section h2 {
+      color: #3b82f6;
+      margin-bottom: 1em;
+    }
+    input[type="file"] {
+      display: block;
+      margin: 1em auto;
+      padding: 0.5em;
+      border: 2px dashed #3b82f6;
+      border-radius: 8px;
+      background: #fff;
+      width: 100%;
+      max-width: 300px;
+    }
     #recordBtn {
       background: #6366f1;
       color: #fff;
@@ -64,74 +87,137 @@
       padding: 0.8em 1.5em;
       font-size: 1rem;
       cursor: pointer;
-      margin-left: 8px;
+      margin: 1em;
+      transition: background 0.3s;
     }
-    #recordBtn:active { background: #3730a3; }
+    #recordBtn:hover { background: #4f46e5; }
     #userText, #gptText {
       font-size: 1.1em;
-      margin: 1em 0 0.5em 0;
-      padding: 0.7em 1em;
-      background: #f1f5f9;
+      margin: 1em 0;
+      padding: 1em;
+      background: #e0e7ff;
       border-radius: 8px;
       min-height: 2em;
+      text-align: left;
     }
-    #gptText { background: #e0e7ff; }
-    .voice-section { background: #f1f5f9; border-radius: 12px; padding: 1.2em; margin: 2em 0; }
-    .voice-btn { background: #6366f1; color: #fff; border: none; border-radius: 8px; padding: 0.8em 1.5em; font-size: 1rem; cursor: pointer; margin-right: 8px;}
-    .voice-btn:active { background: #3730a3; }
-    .info { color: #888; font-size: 0.95em; margin-top: 0.5em; }
-    .faq { margin-top: 2.5em; }
-    .faq h3 { margin-bottom: 0.2em; }
-    .faq strong { color: #3b82f6; }
-    .success { color: #16a34a; margin-top: 0.5em; }
-    @media (max-width: 700px) {
-      .container { max-width: 98vw; padding: 24px 2vw; }
-      h1 { font-size: 1.5rem; }
-      h2 { font-size: 1.1rem; }
-      .input-row { flex-direction: column; gap: 0.7em; }
-      #recordBtn { width: 100%; margin-left: 0; }
+    #userText { background: #f1f5f9; }
+    .signup-section {
+      background: #e0e7ff;
+      border-radius: 12px;
+      padding: 2em;
+      margin: 3em 0;
+      text-align: center;
     }
-    .input-row input[type="email"] {
-      width: 320px;
-      max-width: 100%;
-      padding: 0.13em 1em; /* 높이 1/3로 줄임 */
+    .email-form {
+      display: flex;
+      gap: 1em;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5em 0;
+      flex-wrap: wrap;
+    }
+    input[type="email"] {
+      padding: 0.7em 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 1em;
-      box-sizing: border-box;
+      min-width: 250px;
+    }
+    .faq {
+      margin-top: 3em;
+    }
+    .faq h3 {
+      color: #3b82f6;
+      margin-bottom: 0.5em;
+      font-size: 1.2em;
+    }
+    .faq strong {
+      color: #3b82f6;
+    }
+    /* 반응형 스타일 */
+    @media (max-width: 768px) {
+      .container {
+        max-width: 95vw;
+        padding: 24px;
+        margin-top: 20px;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+      .subtitle {
+        font-size: 1rem;
+      }
+      .section {
+        padding: 0;
+      }
+      .demo-section, .signup-section {
+        padding: 1.5em;
+      }
+      .email-form {
+        flex-direction: column;
+        gap: 1em;
+      }
+      input[type="email"] {
+        min-width: 200px;
+        width: 100%;
+      }
+      .cta-btn {
+        width: 100%;
+      }
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      .container {
+        padding: 16px;
+      }
+      input[type="file"] {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>나처럼 말하고,<br>나처럼 생각하는 AI</h1>
-    <h2 class="subtitle">내가 업로드한 목소리, 글, 일기, 기억들로<br>나를 닮은 AI가 완성됩니다.</h2>
-    <button class="cta-btn" onclick="document.getElementById('voice-section').scrollIntoView({behavior:'smooth'})">날 닮은 AI 먼저 만나보기</button>
+    <div class="subtitle">
+      내가 업로드한 목소리, 글, 일기, 기억들로<br>
+      나를 닮은 AI가 완성됩니다.
+    </div>
+    <button class="cta-btn" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">
+      날 닮은 AI 먼저 만나보기
+    </button>
 
     <div class="section">
-      <p><strong>“누군가 나를 진짜로 이해해줬으면 좋겠다는 생각, 해본 적 있으세요?”</strong></p>
+      <p><strong>"누군가 나를 진짜로 이해해줬으면 좋겠다는 생각, 해본 적 있으세요?"</strong></p>
       <p>낯선 위로보다, 익숙한 목소리가 더 큰 힘이 될 때가 있어요.<br>
       그 말투, 그 감정까지 닮은 AI가 있다면<br>
       진짜 내 마음을 꺼내 놓을 수 있지 않을까요?</p>
     </div>
 
-    <div class="section" id="voice-section">
-      <strong>바로 경험해보세요.</strong>
-      <div class="voice-section">
-        <h2 style="text-align:center; color:#3b82f6; margin-bottom:1em;">🎤 내 목소리로 GPT랑 대화하기</h2>
-        <div class="input-row">
-          <input type="file" id="voiceFile" accept="audio/*">
-          <button id="recordBtn">말하기</button>
-        </div>
+    <div class="section">
+      <h2 style="text-align: center; color: #333; margin-bottom: 1em;">바로 경험해보세요.</h2>
+      <p style="text-align: center; color: #666;">내 목소리를 등록하고, 내 목소리로 얘기하는 AI를 만나보세요.</p>
+      
+      <div class="demo-section" id="demo-section">
+        <h2>🎤 내 목소리로 GPT랑 대화하기</h2>
+        <input type="file" id="voiceFile" accept="audio/*">
+        <button id="recordBtn">말하기</button>
         <p id="userText"></p>
         <p id="gptText"></p>
       </div>
     </div>
 
-    <div class="section" style="margin-top: 4em;">
-      <strong>나를 닮은 AI를 먼저 만나고 싶으신가요?</strong>
+    <div class="signup-section">
+      <h3 style="margin-top: 0;">나를 닮은 AI를 먼저 만나고 싶으신가요?</h3>
       <p>연락처를 남겨주시는 <span class="highlight">100분</span>만 우선 사용할 수 있습니다.</p>
-      <a href="https://forms.gle/qaRMsBjbtvKQCwLw5" target="_blank">
-        <button class="cta-btn" type="button">사전 신청하고 알림받기</button>
-      </a>
+      <div class="email-form">
+        <input type="email" placeholder="이메일 입력하기" style="flex: 1;">
+        <a href="https://forms.gle/qaRMsBjbtvKQCwLw5" target="_blank">
+          <button class="cta-btn" style="margin: 0;">사전 신청하고 알림받기</button>
+        </a>
+      </div>
     </div>
 
     <div class="faq">
@@ -153,31 +239,7 @@
       당신이 남긴 모든 기록이 의미 있는 재료가 됩니다.</p>
     </div>
   </div>
+
   <script src="script/main.js"></script>
-  <script>
-    // 사전 신청 폼 (이메일 입력)
-    function submitNotify() {
-      const email = document.getElementById('emailInput').value;
-      fetch('/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      }).then(() => {
-        document.getElementById('notifyMsg').textContent = "신청이 완료되었습니다! 곧 소식을 전해드릴게요.";
-        document.getElementById('emailInput').value = "";
-      });
-    }
-    // 아래 부분은 기존 main.js와 연동 필요
-    document.getElementById('recordBtn').onclick = function() {
-      document.getElementById('voiceStatus').textContent = "녹음 중... (main.js 연동 필요)";
-    };
-    document.getElementById('voiceFile').onchange = function() {
-      document.getElementById('voiceStatus').textContent = "목소리 파일 업로드됨 (main.js 연동 필요)";
-    };
-    document.getElementById('aiSpeakBtn').onclick = function() {
-      document.getElementById('voiceStatus').textContent = "AI가 내 목소리로 말하는 중... (main.js 연동 필요)";
-      document.getElementById('aiAudio').style.display = "block";
-    };
-  </script>
 </body>
 </html>

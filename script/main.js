@@ -73,19 +73,31 @@ async function getGPTResponse(text) {
 document.getElementById("voiceFile").addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  const form = new FormData();
-  form.append("file", file);
+  
+  try {
+    const form = new FormData();
+    form.append("file", file);
 
-  const res = await fetch("http://localhost:3000/api/voice-upload", {
-    method: "POST",
-    body: form
-  });
-  const data = await res.json();
-  if (data.voice_id) {
-    customVoiceId = data.voice_id;
-    alert("목소리 등록 성공! 이제 내 목소리로 답변합니다.");
-  } else {
-    alert("목소리 등록 실패: " + (data.detail || JSON.stringify(data)));
+    const res = await fetch("http://localhost:3000/api/voice-upload", {
+      method: "POST",
+      body: form
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    if (data.voice_id) {
+      customVoiceId = data.voice_id;
+      alert("목소리 등록 성공! 이제 내 목소리로 답변합니다.");
+    } else {
+      alert("목소리 등록 실패: " + (data.detail || JSON.stringify(data)));
+    }
+  } catch (error) {
+    console.error("목소리 업로드 에러:", error);
+    alert("목소리 업로드 중 오류가 발생했습니다: " + error.message);
+    // 에러 발생 시 파일 input 리셋하지 않음
   }
 });
 
