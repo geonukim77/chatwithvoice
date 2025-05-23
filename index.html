@@ -176,6 +176,16 @@
         max-width: 100%;
       }
     }
+
+    /* 링크 밑줄 제거 */
+    a {
+      text-decoration: none;
+    }
+    
+    /* 또는 더 구체적으로 */
+    .signup-section a {
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -212,12 +222,9 @@
     <div class="signup-section">
       <h3 style="margin-top: 0;">나를 닮은 AI를 먼저 만나고 싶으신가요?</h3>
       <p>연락처를 남겨주시는 <span class="highlight">100분</span>만 우선 사용할 수 있습니다.</p>
-      <div class="email-form">
-        <input type="email" placeholder="이메일 입력하기" style="flex: 1;">
-        <a href="https://forms.gle/qaRMsBjbtvKQCwLw5" target="_blank">
-          <button class="cta-btn" style="margin: 0;">사전 신청하고 알림받기</button>
-        </a>
-      </div>
+      <a href="https://forms.gle/qaRMsBjbtvKQCwLw5" target="_blank">
+        <button class="cta-btn" style="margin: 1.5em auto; display: block;">사전 신청하고 알림받기</button>
+      </a>
     </div>
 
     <div class="faq">
