@@ -181,11 +181,6 @@
     a {
       text-decoration: none;
     }
-    
-    /* 또는 더 구체적으로 */
-    .signup-section a {
-      text-decoration: none;
-    }
   </style>
 </head>
 <body>
@@ -212,10 +207,25 @@
       
       <div class="demo-section" id="demo-section">
         <h2>🎤 내 목소리로 GPT랑 대화하기</h2>
-        <input type="file" id="voiceFile" accept="audio/*">
-        <button id="recordBtn">말하기</button>
-        <p id="userText"></p>
-        <p id="gptText"></p>
+        
+        <!-- 목소리 등록 섹션 -->
+        <div style="margin: 2em 0; padding: 1.5em; background: #fef3c7; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: #92400e;">1단계: 내 목소리 등록</h3>
+          <button id="voiceRecordBtn" style="background: #ef4444; color: #fff; border: none; border-radius: 8px; padding: 1em 2em; font-size: 1.1rem; cursor: pointer; margin: 0.5em;">
+            🔴 목소리 녹음하기
+          </button>
+          <p id="voiceStatus" style="color: #666; margin: 0.5em 0;">목소리를 녹음해서 AI에게 등록하세요 (최소 10초 권장)</p>
+        </div>
+        
+        <hr style="margin: 2em 0; border: 1px solid #e5e7eb;">
+        
+        <!-- 대화 섹션 -->
+        <div style="margin: 2em 0; padding: 1.5em; background: #dbeafe; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: #1e40af;">2단계: AI와 대화하기</h3>
+          <button id="recordBtn" style="background: #6366f1; color: #fff; border: none; border-radius: 8px; padding: 0.8em 1.5em; font-size: 1rem; cursor: pointer; margin: 1em; transition: background 0.3s;">🎤 말하기</button>
+          <p id="userText"></p>
+          <p id="gptText"></p>
+        </div>
       </div>
     </div>
 
