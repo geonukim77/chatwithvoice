@@ -8,7 +8,6 @@ import { FormData } from 'formdata-node';
 import { fileFromPath } from 'formdata-node/file-from-path';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { networkInterfaces } from 'os'; // 이 줄 추가!
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,8 +16,8 @@ dotenv.config();
 
 const app = express();
 
-// 정적 파일 제공 (MIME 타입 설정)
-app.use(express.static('.', {
+// 정적 파일 제공 (MIME 타입 명시)
+app.use(express.static(path.join(__dirname, '../'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
@@ -32,12 +31,18 @@ app.use(express.static('.', {
 app.use(cors());
 app.use(express.json());
 
-// 파일 업로드 설정
-const upload = multer({ dest: 'uploads/' });
+// 파일 업로드 설정 (메모리 저장)
+const upload = multer({ storage: multer.memoryStorage() });
 
 // 기본 라우트
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
+});
+
+// JavaScript 파일 직접 서빙
+app.get('/script/main.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.sendFile(path.join(__dirname, '../script/main.js'));
 });
 
 // STT API (Whisper)
@@ -48,7 +53,7 @@ app.post('/api/speech-to-text', upload.single('file'), async (req, res) => {
     }
 
     const form = new FormData();
-    form.append('file', await fileFromPath(req.file.path));
+    form.append('file', new Blob([req.file.buffer]), req.file.originalname);
     form.append('model', 'whisper-1');
 
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
@@ -58,7 +63,6 @@ app.post('/api/speech-to-text', upload.single('file'), async (req, res) => {
     });
 
     const data = await response.json();
-    fs.unlinkSync(req.file.path); // 파일 정리
     res.json(data);
   } catch (error) {
     console.error('STT 에러:', error);
@@ -145,7 +149,7 @@ app.post('/api/voice-upload', upload.single('file'), async (req, res) => {
     
     const form = new FormData();
     form.append('name', `내 목소리 ${Date.now()}`);
-    form.append('files', await fileFromPath(req.file.path));
+    form.append('files', new Blob([req.file.buffer]), req.file.originalname);
 
     let response = await fetch('https://api.elevenlabs.io/v1/voices/add', {
       method: 'POST',
@@ -171,9 +175,6 @@ app.post('/api/voice-upload', upload.single('file'), async (req, res) => {
         console.log("재시도 후 ElevenLabs 응답:", data);
       }
     }
-    
-    // 업로드된 파일 정리
-    fs.unlinkSync(req.file.path);
     
     if (data.voice_id) {
       res.json({ 
@@ -214,21 +215,5 @@ app.post('/api/tts', async (req, res) => {
   }
 });
 
-// 로컬 서버 시작
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on:`);
-  console.log(`- Local: http://localhost:${PORT}`);
-  
-  // networkInterfaces 사용 (이제 import됨)
-  const nets = networkInterfaces();
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name]) {
-      if (net.family === 'IPv4' && !net.internal) {
-        console.log(`- Mobile: http://${net.address}:${PORT}`);
-      }
-    }
-  }
-});
-
+// Vercel 서버리스 함수로 내보내기 (로컬에서는 실행 안됨)
 export default app;

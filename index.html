@@ -4,252 +4,615 @@
   <meta charset="UTF-8">
   <title>나를 닮은 AI - Voice GPT Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-      background: #f8fafc;
-      color: #222;
+    * {
       margin: 0;
       padding: 0;
-      line-height: 1.6;
+      box-sizing: border-box;
     }
+    
+    body {
+      font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #2d3748;
+      line-height: 1.7;
+      /* 모바일 스크롤 개선 */
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .floating-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      /* 모바일에서 성능 최적화 */
+      will-change: transform;
+    }
+    
+    .shape {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float 20s infinite linear;
+    }
+    
+    .shape:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-delay: 0s; }
+    .shape:nth-child(2) { width: 60px; height: 60px; left: 80%; animation-delay: 5s; }
+    .shape:nth-child(3) { width: 100px; height: 100px; left: 50%; animation-delay: 10s; }
+    .shape:nth-child(4) { width: 40px; height: 40px; left: 20%; animation-delay: 15s; }
+    
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
       margin-top: 40px;
       margin-bottom: 40px;
-      padding: 40px;
+      padding: 50px;
+      position: relative;
+      z-index: 2;
     }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 3em;
+    }
+    
     h1 {
-      font-size: 2.5rem;
+      font-size: 3rem;
       margin-bottom: 0.5em;
-      color: #3b82f6;
-      text-align: center;
-      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      letter-spacing: -1px;
+      /* 모바일에서 줄바꿈 개선 */
+      word-break: keep-all;
     }
+    
     .subtitle {
-      font-size: 1.2rem;
-      color: #666;
-      text-align: center;
+      font-size: 1.3rem;
+      color: #718096;
       margin-bottom: 2em;
+      font-weight: 300;
+      /* 모바일에서 줄바꿈 개선 */
+      word-break: keep-all;
     }
+    
     .cta-btn {
-      background: #3b82f6;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
       border: none;
-      border-radius: 8px;
-      padding: 1em 2em;
+      border-radius: 50px;
+      padding: 1.2em 3em;
       font-size: 1.1rem;
+      font-weight: 500;
       cursor: pointer;
-      margin: 1.5em auto;
+      margin: 2em auto;
       display: block;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      /* 모바일에서 터치 영역 개선 */
+      min-height: 48px;
     }
-    .cta-btn:hover { background: #2563eb; }
+    
+    .cta-btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+    
     .section {
-      margin: 3em 0;
+      margin: 4em 0;
       padding: 0 1em;
     }
-    .highlight {
-      color: #3b82f6;
-      font-weight: bold;
-    }
-    .demo-section {
-      background: #f1f5f9;
-      border-radius: 12px;
-      padding: 2em;
-      margin: 2em 0;
+    
+    .emotional-text {
+      font-size: 1.4rem;
+      color: #4a5568;
       text-align: center;
+      line-height: 1.8;
+      margin: 2em 0;
+      font-weight: 400;
+      word-break: keep-all;
     }
-    .demo-section h2 {
-      color: #3b82f6;
-      margin-bottom: 1em;
+    
+    .highlight {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600;
     }
-    input[type="file"] {
-      display: block;
-      margin: 1em auto;
-      padding: 0.5em;
-      border: 2px dashed #3b82f6;
-      border-radius: 8px;
-      background: #fff;
-      width: 100%;
-      max-width: 300px;
-    }
-    #recordBtn {
-      background: #6366f1;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.8em 1.5em;
-      font-size: 1rem;
-      cursor: pointer;
-      margin: 1em;
-      transition: background 0.3s;
-    }
-    #recordBtn:hover { background: #4f46e5; }
-    #userText, #gptText {
-      font-size: 1.1em;
-      margin: 1em 0;
-      padding: 1em;
-      background: #e0e7ff;
-      border-radius: 8px;
-      min-height: 2em;
-      text-align: left;
-    }
-    #userText { background: #f1f5f9; }
-    .signup-section {
-      background: #e0e7ff;
-      border-radius: 12px;
-      padding: 2em;
+    
+    .demo-section {
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+      border-radius: 20px;
+      padding: 3em;
       margin: 3em 0;
       text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
-    .email-form {
-      display: flex;
-      gap: 1em;
-      justify-content: center;
-      align-items: center;
+    
+    .demo-section h2 {
+      color: #4a5568;
+      margin-bottom: 1.5em;
+      font-size: 1.8rem;
+      font-weight: 600;
+      word-break: keep-all;
+    }
+    
+    .voice-section {
+      margin: 2.5em 0;
+      padding: 2em;
+      background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+      border-radius: 16px;
+      border-left: 4px solid #f56565;
+    }
+    
+    .chat-section {
+      margin: 2.5em 0;
+      padding: 2em;
+      background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+      border-radius: 16px;
+      border-left: 4px solid #4299e1;
+    }
+    
+    .voice-section h3, .chat-section h3 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      margin-bottom: 1em;
+      font-weight: 600;
+      word-break: keep-all;
+    }
+    
+    .voice-section h3 { color: #c53030; }
+    .chat-section h3 { color: #2b6cb0; }
+    
+    #voiceRecordBtn, #recordBtn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 1.2em 2.5em;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin: 1em;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      /* 모바일에서 터치 영역 개선 */
+      min-height: 48px;
+    }
+    
+    #voiceRecordBtn:hover, #recordBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+    
+    #userText, #gptText {
+      font-size: 1.1em;
       margin: 1.5em 0;
-      flex-wrap: wrap;
+      padding: 1.5em;
+      border-radius: 16px;
+      min-height: 3em;
+      text-align: left;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      word-break: keep-all;
+      line-height: 1.6;
     }
-    input[type="email"] {
-      padding: 0.7em 1em;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1em;
-      min-width: 250px;
+    
+    #userText { 
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+      border-left: 4px solid #667eea;
     }
+    
+    #gptText {
+      background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+      border-left: 4px solid #38b2ac;
+    }
+    
+    .signup-section {
+      background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+      border-radius: 20px;
+      padding: 3em;
+      margin: 4em 0;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    
     .faq {
-      margin-top: 3em;
+      margin-top: 4em;
     }
+    
     .faq h3 {
-      color: #3b82f6;
-      margin-bottom: 0.5em;
-      font-size: 1.2em;
+      color: #4a5568;
+      margin-bottom: 1em;
+      font-size: 1.3rem;
+      font-weight: 600;
+      word-break: keep-all;
     }
+    
+    .faq p {
+      color: #718096;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 2.5em;
+      word-break: keep-all;
+    }
+    
     .faq strong {
-      color: #3b82f6;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600;
     }
-    /* 반응형 스타일 */
+    
+    /* 큰 화면 (태블릿) 반응형 스타일 */
+    @media (max-width: 1024px) {
+      .container {
+        margin: 20px;
+        padding: 40px;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+      }
+    }
+    
+    /* 중간 화면 (태블릿 세로) 반응형 스타일 */
     @media (max-width: 768px) {
       .container {
         max-width: 95vw;
-        padding: 24px;
-        margin-top: 20px;
+        padding: 25px;
+        margin: 15px auto;
+        border-radius: 16px;
       }
+      
       h1 {
-        font-size: 1.8rem;
+        font-size: 2.2rem;
+        line-height: 1.2;
       }
+      
       .subtitle {
-        font-size: 1rem;
+        font-size: 1.1rem;
+        margin-bottom: 1.5em;
       }
-      .section {
-        padding: 0;
+      
+      .emotional-text {
+        font-size: 1.2rem;
       }
+      
       .demo-section, .signup-section {
+        padding: 2em 1.5em;
+        margin: 2em 0;
+      }
+      
+      .voice-section, .chat-section {
         padding: 1.5em;
+        margin: 2em 0;
       }
-      .email-form {
-        flex-direction: column;
-        gap: 1em;
+      
+      .section {
+        margin: 3em 0;
+        padding: 0 0.5em;
       }
-      input[type="email"] {
-        min-width: 200px;
+      
+      #voiceRecordBtn, #recordBtn {
+        padding: 1.2em 2em;
+        font-size: 1rem;
+        min-height: 56px;
         width: 100%;
+        max-width: 280px;
+        margin: 1em auto;
+        display: block;
       }
-      .cta-btn {
-        width: 100%;
+      
+      #voiceStatus {
+        font-size: 1rem !important;
       }
-    }
-    @media (max-width: 480px) {
-      h1 {
+      
+      .demo-section h2 {
         font-size: 1.5rem;
       }
-      .container {
-        padding: 16px;
-      }
-      input[type="file"] {
-        max-width: 100%;
+      
+      .voice-section h3, .chat-section h3 {
+        font-size: 1.2rem;
       }
     }
-
-    /* 링크 밑줄 제거 */
+    
+    /* 작은 화면 (모바일) 반응형 스타일 */
+    @media (max-width: 480px) {
+      .container {
+        margin: 10px auto;
+        padding: 20px 15px;
+        border-radius: 12px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+        line-height: 1.3;
+        margin-bottom: 0.7em;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+      
+      .emotional-text {
+        font-size: 1.1rem;
+        margin: 1.5em 0;
+      }
+      
+      .cta-btn {
+        padding: 1em 2em;
+        font-size: 1rem;
+        margin: 1.5em auto;
+      }
+      
+      .demo-section, .signup-section {
+        padding: 1.5em 1em;
+        border-radius: 12px;
+      }
+      
+      .voice-section, .chat-section {
+        padding: 1.2em;
+        border-radius: 12px;
+        margin: 1.5em 0;
+      }
+      
+      .demo-section h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1em;
+      }
+      
+      .voice-section h3, .chat-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.8em;
+      }
+      
+      #voiceRecordBtn, #recordBtn {
+        padding: 1em 1.5em;
+        font-size: 0.95rem;
+        min-height: 52px;
+        width: 100%;
+        max-width: none;
+        margin: 0.8em 0;
+      }
+      
+      #userText, #gptText {
+        font-size: 1rem;
+        padding: 1.2em;
+        margin: 1em 0;
+        border-radius: 12px;
+      }
+      
+      #voiceStatus {
+        font-size: 0.95rem !important;
+        margin: 0.8em 0 !important;
+      }
+      
+      .section {
+        margin: 2em 0;
+        padding: 0;
+      }
+      
+      .faq h3 {
+        font-size: 1.1rem;
+      }
+      
+      .faq p {
+        font-size: 1rem;
+        margin-bottom: 2em;
+      }
+      
+      .signup-section h3 {
+        font-size: 1.3rem !important;
+      }
+      
+      .signup-section p {
+        font-size: 1rem !important;
+      }
+      
+      /* 모바일 스크롤 영역 안의 텍스트 */
+      p[style*="font-size: 1.2rem"] {
+        font-size: 1rem !important;
+      }
+      
+      h2[style*="font-size: 2rem"] {
+        font-size: 1.4rem !important;
+      }
+    }
+    
+    /* 아주 작은 화면 (구형 모바일) */
+    @media (max-width: 360px) {
+      .container {
+        margin: 5px auto;
+        padding: 15px 10px;
+      }
+      
+      h1 {
+        font-size: 1.6rem;
+      }
+      
+      .demo-section, .signup-section {
+        padding: 1.2em 0.8em;
+      }
+      
+      .voice-section, .chat-section {
+        padding: 1em;
+      }
+      
+      #voiceRecordBtn, #recordBtn {
+        font-size: 0.9rem;
+        padding: 0.9em 1.2em;
+      }
+    }
+    
+    /* 애니메이션 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .section {
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    /* 링크 스타일 */
     a {
       text-decoration: none;
+    }
+    
+    /* 터치 개선 */
+    button {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      /* 모바일에서 더블탭 줌 방지 */
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    /* 모바일에서 입력 요소 확대 방지 */
+    input, textarea, select {
+      font-size: 16px;
+    }
+    
+    /* 스크롤바 스타일링 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 4px;
+    }
+    
+    /* 모바일에서 성능 최적화 */
+    @media (max-width: 768px) {
+      .floating-shapes {
+        display: none; /* 모바일에서 떠다니는 도형 숨김 */
+      }
+      
+      * {
+        /* 하드웨어 가속 최적화 */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
     }
   </style>
 </head>
 <body>
+  <!-- 떠다니는 도형들 -->
+  <div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
+
   <div class="container">
-    <h1>나처럼 말하고,<br>나처럼 생각하는 AI</h1>
-    <div class="subtitle">
-      내가 업로드한 목소리, 글, 일기, 기억들로<br>
-      나를 닮은 AI가 완성됩니다.
-    </div>
-    <button class="cta-btn" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">
-      날 닮은 AI 먼저 만나보기
-    </button>
-
-    <div class="section">
-      <p><strong>"누군가 나를 진짜로 이해해줬으면 좋겠다는 생각, 해본 적 있으세요?"</strong></p>
-      <p>낯선 위로보다, 익숙한 목소리가 더 큰 힘이 될 때가 있어요.<br>
-      그 말투, 그 감정까지 닮은 AI가 있다면<br>
-      진짜 내 마음을 꺼내 놓을 수 있지 않을까요?</p>
+    <div class="header">
+      <h1>나처럼 말하고,<br>나처럼 생각하는 AI</h1>
+      <div class="subtitle">
+        내가 업로드한 목소리, 글, 일기, 기억들로<br>
+        나를 닮은 AI가 완성됩니다.
+      </div>
+      <button class="cta-btn" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">
+        💫 날 닮은 AI 먼저 만나보기
+      </button>
     </div>
 
     <div class="section">
-      <h2 style="text-align: center; color: #333; margin-bottom: 1em;">바로 경험해보세요.</h2>
-      <p style="text-align: center; color: #666;">내 목소리를 등록하고, 내 목소리로 얘기하는 AI를 만나보세요.</p>
+      <div class="emotional-text">
+        <strong>"누군가 나를 진짜로 이해해줬으면 좋겠다는 생각, 해본 적 있으세요?"</strong>
+      </div>
+      <p style="text-align: center; font-size: 1.2rem; color: #718096; line-height: 1.8;">
+        낯선 위로보다, 익숙한 목소리가 더 큰 힘이 될 때가 있어요.<br>
+        그 말투, 그 감정까지 닮은 AI가 있다면<br>
+        진짜 내 마음을 꺼내 놓을 수 있지 않을까요?
+      </p>
+    </div>
+
+    <div class="section">
+      <h2 style="text-align: center; color: #4a5568; margin-bottom: 1em; font-size: 2rem; font-weight: 600;">✨ 바로 경험해보세요</h2>
+      <p style="text-align: center; color: #718096; font-size: 1.2rem;">내 목소리를 등록하고, 내 목소리로 얘기하는 AI를 만나보세요.</p>
       
       <div class="demo-section" id="demo-section">
         <h2>🎤 내 목소리로 GPT랑 대화하기</h2>
         
         <!-- 목소리 등록 섹션 -->
-        <div style="margin: 2em 0; padding: 1.5em; background: #fef3c7; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: #92400e;">1단계: 내 목소리 등록</h3>
-          <button id="voiceRecordBtn" style="background: #ef4444; color: #fff; border: none; border-radius: 8px; padding: 1em 2em; font-size: 1.1rem; cursor: pointer; margin: 0.5em;">
+        <div class="voice-section">
+          <h3>🎙️ 1단계: 내 목소리 등록</h3>
+          <button id="voiceRecordBtn">
             🔴 녹음하기
           </button>
-          <p id="voiceStatus" style="color: #666; margin: 0.5em 0;">목소리를 녹음해서 AI에게 등록하세요 (최소 10초 권장)</p>
+          <p id="voiceStatus" style="color: #718096; margin: 1em 0; font-size: 1.1rem;">목소리를 녹음해서 AI에게 등록하세요 (최소 10초 권장)</p>
         </div>
         
-        <hr style="margin: 2em 0; border: 1px solid #e5e7eb;">
+        <div style="text-align: center; margin: 2em 0;">
+          <div style="width: 2px; height: 40px; background: linear-gradient(to bottom, #667eea, #764ba2); margin: 0 auto; border-radius: 1px;"></div>
+          <div style="margin: 1em 0; color: #718096;">⬇️</div>
+        </div>
         
         <!-- 대화 섹션 -->
-        <div style="margin: 2em 0; padding: 1.5em; background: #dbeafe; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: #1e40af;">2단계: AI와 대화하기</h3>
-          <button id="recordBtn" style="background: #6366f1; color: #fff; border: none; border-radius: 8px; padding: 0.8em 1.5em; font-size: 1rem; cursor: pointer; margin: 1em; transition: background 0.3s;">🎤 말하기</button>
-          <p id="userText"></p>
-          <p id="gptText"></p>
+        <div class="chat-section">
+          <h3>💬 2단계: AI와 대화하기</h3>
+          <button id="recordBtn">🎤 말하기</button>
+          <div id="userText"></div>
+          <div id="gptText"></div>
         </div>
       </div>
     </div>
 
     <div class="signup-section">
-      <h3 style="margin-top: 0;">나를 닮은 AI를 먼저 만나고 싶으신가요?</h3>
-      <p>연락처를 남겨주시는 <span class="highlight">100분</span>만 우선 사용할 수 있습니다.</p>
+      <h3 style="margin-top: 0; font-size: 1.6rem; color: #4a5568;">💝 나를 닮은 AI를 먼저 만나고 싶으신가요?</h3>
+      <p style="font-size: 1.2rem; color: #718096;">연락처를 남겨주시는 <span class="highlight">100분</span>만 우선 사용할 수 있습니다.</p>
       <a href="https://forms.gle/qaRMsBjbtvKQCwLw5" target="_blank">
-        <button class="cta-btn" style="margin: 1.5em auto; display: block;">사전 신청하고 알림받기</button>
+        <button class="cta-btn">🚀 사전 신청하고 알림받기</button>
       </a>
     </div>
 
     <div class="faq">
-      <h3>❓ 내 정보는 안전할까요?</h3>
+      <h3>🔒 내 정보는 안전할까요?</h3>
       <p><strong>네, 무엇보다 소중하게 다루겠습니다.</strong><br>
       업로드하신 목소리와 텍스트 데이터는 <strong>오직 여러분만의 AI를 생성하는 목적</strong>으로만 사용되며,<br>
       제3자에게 공유되거나 상업적으로 이용되지 않습니다.<br>
       모든 데이터는 업로드 즉시 암호화되며, 언제든지 삭제를 요청하실 수 있습니다.</p>
 
-      <h3>❓ 언제쯤 만나볼 수 있나요?</h3>
+      <h3>⏰ 언제쯤 만나볼 수 있나요?</h3>
       <p>현재 내부 테스트와 사용자 피드백 수집을 거쳐,<br>
       <strong>2025년 하반기 베타 버전 공개</strong>를 목표로 개발 중입니다.<br>
       사전 신청자분들께는 가장 먼저 새로운 기능을 체험하실 수 있도록 <strong>우선 초대</strong>해드릴 예정입니다.</p>
 
-      <h3>❓ 꼭 목소리만 필요한가요?</h3>
+      <h3>📝 꼭 목소리만 필요한가요?</h3>
       <p>아니요.<br>
       <strong>당신의 글, 일기, 말투, 생각</strong>까지—<br>
       AI가 당신을 닮아가기 위해선 목소리뿐 아니라,<br>
@@ -257,6 +620,275 @@
     </div>
   </div>
 
-  <script src="script/main.js"></script>
+  <!-- JavaScript 코드는 그대로 유지 -->
+  <script>
+    const recordBtn = document.getElementById("recordBtn");
+    const voiceRecordBtn = document.getElementById("voiceRecordBtn");
+    const voiceStatus = document.getElementById("voiceStatus");
+
+    let mediaRecorder, chunks = [];
+    let customVoiceId = null;
+    let isRecordingVoice = false;
+    let isRecordingChat = false;
+
+    const API_BASE = window.location.origin;
+
+    console.log("JavaScript 로드됨!");
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("DOM 로드 완료");
+      console.log("voiceRecordBtn:", voiceRecordBtn);
+      console.log("recordBtn:", recordBtn);
+      
+      if (!voiceRecordBtn || !recordBtn) {
+        console.error("버튼 요소를 찾을 수 없습니다!");
+        return;
+      }
+      
+      voiceRecordBtn.addEventListener('click', handleVoiceRecord);
+      recordBtn.addEventListener('click', handleChatRecord);
+    });
+
+    async function handleVoiceRecord() {
+      console.log("목소리 녹음 버튼 클릭됨");
+      
+      if (!isRecordingVoice) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          
+          let options = { mimeType: 'audio/webm' };
+          if (!MediaRecorder.isTypeSupported('audio/webm')) {
+            if (MediaRecorder.isTypeSupported('audio/mp4')) {
+              options = { mimeType: 'audio/mp4' };
+            } else if (MediaRecorder.isTypeSupported('audio/wav')) {
+              options = { mimeType: 'audio/wav' };
+            } else {
+              options = {};
+            }
+          }
+          
+          mediaRecorder = new MediaRecorder(stream, options);
+          chunks = [];
+          
+          mediaRecorder.start();
+          isRecordingVoice = true;
+          
+          voiceRecordBtn.textContent = "⏹️ 녹음 중... 클릭해서 멈추기";
+          voiceRecordBtn.style.background = "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)";
+          voiceStatus.textContent = "목소리를 녹음 중입니다... (최소 10초 권장)";
+          voiceStatus.style.color = "#dc2626";
+          
+          mediaRecorder.ondataavailable = e => chunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+            await uploadVoice(blob);
+            
+            stream.getTracks().forEach(track => track.stop());
+          };
+          
+        } catch (error) {
+          console.error("마이크 접근 에러:", error);
+          if (error.name === 'NotAllowedError') {
+            alert("마이크 권한이 필요합니다.\n브라우저 설정에서 마이크 권한을 허용해주세요.");
+          } else if (error.name === 'NotFoundError') {
+            alert("마이크를 찾을 수 없습니다.");
+          } else {
+            alert("마이크에 접근할 수 없습니다: " + error.message);
+          }
+        }
+      } else {
+        mediaRecorder.stop();
+        isRecordingVoice = false;
+        
+        voiceRecordBtn.textContent = "⏳ 업로드 중...";
+        voiceRecordBtn.style.background = "linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)";
+        voiceStatus.textContent = "목소리를 업로드하고 있습니다...";
+        voiceStatus.style.color = "#9ca3af";
+      }
+    }
+
+    async function handleChatRecord() {
+      console.log("대화 녹음 버튼 클릭됨");
+      
+      if (isRecordingChat) {
+        mediaRecorder.stop();
+        return;
+      }
+      
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        let options = { mimeType: 'audio/webm' };
+        if (!MediaRecorder.isTypeSupported('audio/webm')) {
+          if (MediaRecorder.isTypeSupported('audio/mp4')) {
+            options = { mimeType: 'audio/mp4' };
+          } else {
+            options = {};
+          }
+        }
+        
+        mediaRecorder = new MediaRecorder(stream, options);
+        chunks = [];
+        isRecordingChat = true;
+
+        mediaRecorder.start();
+        recordBtn.textContent = "⏹️ 클릭해서 멈추기";
+        recordBtn.style.background = "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)";
+
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+          recordBtn.textContent = "⏳ 처리 중...";
+          recordBtn.style.background = "linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)";
+
+          const text = await speechToText(blob);
+          if (text) {
+            console.log("📝 변환된 텍스트:", text);
+            document.getElementById("userText").textContent = "🗣 " + text;
+
+            const reply = await getGPTResponse(text);
+            document.getElementById("gptText").textContent = "🤖 " + reply;
+
+            await playVoice(reply);
+          }
+
+          recordBtn.textContent = "🎤 말하기";
+          recordBtn.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+          isRecordingChat = false;
+          
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+      } catch (error) {
+        console.error("대화 녹음 에러:", error);
+        alert("마이크에 접근할 수 없습니다. 권한을 확인해주세요.");
+        isRecordingChat = false;
+      }
+    }
+
+    async function uploadVoice(audioBlob) {
+      try {
+        const form = new FormData();
+        
+        const mimeType = audioBlob.type;
+        let extension = 'webm';
+        if (mimeType.includes('mp4')) extension = 'mp4';
+        else if (mimeType.includes('wav')) extension = 'wav';
+        
+        form.append("file", audioBlob, `voice.${extension}`);
+
+        const res = await fetch(`${API_BASE}/api/voice-upload`, {
+          method: "POST",
+          body: form
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
+        const data = await res.json();
+        if (data.voice_id) {
+          customVoiceId = data.voice_id;
+          voiceRecordBtn.textContent = "✅ 등록 완료";
+          voiceRecordBtn.style.background = "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)";
+          voiceStatus.textContent = "✅ 목소리 등록 완료! 이제 아래에서 대화해보세요.";
+          voiceStatus.style.color = "#22c55e";
+          
+          setTimeout(() => {
+            voiceRecordBtn.textContent = "🔴 목소리 다시 녹음하기";
+            voiceRecordBtn.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+            voiceStatus.textContent = "새로운 목소리로 다시 등록하거나, 아래에서 대화를 시작하세요.";
+            voiceStatus.style.color = "#718096";
+          }, 5000);
+          
+        } else {
+          voiceRecordBtn.textContent = "❌ 등록 실패";
+          voiceRecordBtn.style.background = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)";
+          voiceStatus.textContent = "❌ 목소리 등록 실패: " + (data.detail || "알 수 없는 오류");
+          voiceStatus.style.color = "#ef4444";
+        }
+      } catch (error) {
+        console.error("목소리 업로드 에러:", error);
+        voiceRecordBtn.textContent = "❌ 업로드 실패";
+        voiceRecordBtn.style.background = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)";
+        voiceStatus.textContent = "❌ 네트워크 오류. 연결을 확인해주세요.";
+        voiceStatus.style.color = "#ef4444";
+      }
+    }
+
+    async function speechToText(audioBlob) {
+      try {
+        const form = new FormData();
+        
+        const mimeType = audioBlob.type;
+        let extension = 'webm';
+        if (mimeType.includes('mp4')) extension = 'mp4';
+        else if (mimeType.includes('wav')) extension = 'wav';
+        
+        form.append("file", audioBlob, `audio.${extension}`);
+        form.append("model", "whisper-1");
+
+        const res = await fetch(`${API_BASE}/api/speech-to-text`, {
+          method: "POST",
+          body: form
+        });
+
+        const data = await res.json();
+        if (!data.text) {
+          console.error("Whisper 변환 실패:", data);
+          alert("음성 인식에 실패했습니다. 다시 시도해 주세요.");
+          return null;
+        }
+        return data.text;
+      } catch (error) {
+        console.error("음성 변환 에러:", error);
+        alert("네트워크 연결을 확인해주세요.");
+        return null;
+      }
+    }
+
+    async function getGPTResponse(text) {
+      try {
+        const res = await fetch(`${API_BASE}/api/gpt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+
+        const data = await res.json();
+        if (!data.choices || !data.choices[0]) {
+          console.error("GPT API error:", data);
+          return "GPT 응답 오류가 발생했습니다.";
+        }
+        console.log("🤖 GPT 답변:", data.choices[0].message.content);
+        return data.choices[0].message.content;
+      } catch (error) {
+        console.error("GPT 응답 에러:", error);
+        return "네트워크 연결을 확인해주세요.";
+      }
+    }
+
+    async function playVoice(text) {
+      try {
+        const voiceId = customVoiceId || "wl1CnM04OwXOUKQaKBWI";
+        const res = await fetch(`${API_BASE}/api/tts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, voiceId })
+        });
+
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          audio.play();
+        } else {
+          console.error("TTS 실패:", res.status);
+        }
+      } catch (error) {
+        console.error("음성 재생 에러:", error);
+      }
+    }
+  </script>
 </body>
 </html>
